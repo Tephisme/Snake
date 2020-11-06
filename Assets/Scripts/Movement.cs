@@ -11,8 +11,9 @@ public class Movement : MonoBehaviour
     public bool IsFacingRight { get => _rotation.eulerAngles.z == 90; }
 
     private Transform _transform;
-    private Vector3 _direction = Vector3.up;
+    private Vector3 _targetPosition = Vector3.up;
     private Vector3 _newDirection = Vector3.up;
+    private Vector3 _lastDirection = Vector3.up;
     private bool _positionReached = false;
     private Vector3 _previousPosition;
     private float timeElapsed = 0;
@@ -28,40 +29,49 @@ public class Movement : MonoBehaviour
     {
         ChangeDirection();
         
-        Move(_direction);
+        Move(_targetPosition);
     }
 
 
     private void ChangeDirection()
     {
         if (Input.GetKeyDown(KeyCode.DownArrow)
-            && _newDirection != Vector3.down)
+            && _newDirection != Vector3.down
+            && _lastDirection != Vector3.up)
         {
             _newDirection = Vector3.down;
         }
 
         if (Input.GetKeyDown(KeyCode.RightArrow) 
-            && _newDirection != Vector3.right)
+            && _newDirection != Vector3.right
+            && _lastDirection != Vector3.left)
         {
             _newDirection = Vector3.right;
         }
 
         if (Input.GetKeyDown(KeyCode.UpArrow) 
-            && _newDirection != Vector3.up)
+            && _newDirection != Vector3.up
+            && _lastDirection != Vector3.down)
         {
             _newDirection = Vector3.up;
         }
         
         if (Input.GetKeyDown(KeyCode.LeftArrow) 
-            && _newDirection != Vector3.left)
+            && _newDirection != Vector3.left
+            && _lastDirection != Vector3.right)
         {
             _newDirection = Vector3.left;
         }
 
         if(_positionReached)
         {
-            _direction += _newDirection;
+            if (_lastDirection != _newDirection)
+                _lastDirection = _newDirection;
+            
+            _targetPosition += _newDirection;
+            
             ChangeRotation(_newDirection);
+            
             _positionReached = false;
         }
     }
